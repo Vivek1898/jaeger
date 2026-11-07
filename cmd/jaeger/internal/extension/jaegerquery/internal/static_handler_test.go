@@ -91,6 +91,17 @@ func TestRegisterStaticHandler(t *testing.T) {
 			expectedBackendCapabilities: `JAEGER_BACKEND_CAPABILITIES = {"archiveStorage":false,"metricsStorage":false,"searchWithoutServiceName":false,"aiAssistant":false};`,
 		},
 		{
+			// A `$` in the UI config (e.g. Grafana template variables) must survive
+			// injection; ReplaceAll would treat `$service`/`${env}` as submatch
+			// references and drop them.
+			basePath:                    "/",
+			baseURL:                     "/",
+			archiveStorage:              false,
+			UIConfigPath:                "fixture/ui-config-dollar.json",
+			expectedUIConfig:            `https://grafana.example.com/d/$service/${env}`,
+			expectedBackendCapabilities: `JAEGER_BACKEND_CAPABILITIES = {"archiveStorage":false,"metricsStorage":false,"searchWithoutServiceName":false,"aiAssistant":false};`,
+		},
+		{
 			basePath:                    "/jaeger",
 			baseURL:                     "/jaeger/",
 			subroute:                    true,

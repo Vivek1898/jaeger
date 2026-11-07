@@ -178,7 +178,10 @@ func (h *staticAssetsHandler) getUIConfig() *loadedConfig {
 func (h *staticAssetsHandler) deriveIndexHTML(r *http.Request) []byte {
 	out := h.indexHTMLRaw
 	if cfg := h.getUIConfig(); cfg != nil {
-		out = cfg.regexp.ReplaceAll(out, cfg.config)
+		// ReplaceAllLiteral, not ReplaceAll: the UI config is user-provided and may
+		// contain `$` (e.g. Grafana template variables like `$service`/`${env}`),
+		// which ReplaceAll would interpret as submatch references and drop.
+		out = cfg.regexp.ReplaceAllLiteral(out, cfg.config)
 	}
 	versionJSON, _ := json.Marshal(version.Get())
 	out = versionPattern.ReplaceAll(out, fmt.Appendf(nil, "JAEGER_VERSION = %s;", versionJSON))

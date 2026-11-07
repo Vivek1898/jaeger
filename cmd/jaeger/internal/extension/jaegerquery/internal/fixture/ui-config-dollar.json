@@ -1,0 +1,1 @@
+{"menu":[{"label":"Grafana","url":"https://grafana.example.com/d/$service/${env}"}]}
